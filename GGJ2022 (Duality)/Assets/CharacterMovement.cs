@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,43 +7,97 @@ using UnityEngine.InputSystem;
 public class CharacterMovement : MonoBehaviour
 {
     public CharacterController controller;
-    public float moveSpeed;
-    public float turnSmoothTime = 0.1f;
-    public float turnSmoothVelocity;
-    private PlayerController controls;
+    public Camera playerCam;
     
-    
-    // Start is called before the first frame update
+    public Animator animator;
+    public int isWalkingHash;
+    public int isRunningHash;
+
+    private PlayerController input;
+
+    private Vector2 currentMovement;
+    private bool movementPressed;
+    private bool runPressed;
+    private void Awake()
+    {
+        input = new PlayerController();
+        input.Keyboard.Move.performed += ctx =>
+        {
+            currentMovement = ctx.ReadValue<Vector2>();
+            movementPressed = currentMovement.x != 0 || currentMovement.y != 0;
+        };
+        
+        input.Keyboard.Run.performed += ctx => runPressed = ctx.ReadValueAsButton();
+        input.Keyboard.Run.canceled += ctx => runPressed = false;
+
+        input.Keyboard.MouseDelta.performed += ctx => ctx.ReadValue<Vector2>();
+    }
+
     void Start()
     {
-        controls = new PlayerController();
-        controls.Enable();
-        moveSpeed = 10f;
-        
+        animator = GetComponentInChildren<Animator>();
+
+        isWalkingHash = Animator.StringToHash("isWalking");
+        isRunningHash = Animator.StringToHash("isRunning");
+        playerCam = Camera.main;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        HandleMovement();
+        HandleRotation();
     }
 
-   public void OnMove(InputAction.CallbackContext context)
+    void HandleMovement()
     {
-        Vector3 direction = new Vector3(context.ReadValue<Vector2>().x, 0,context.ReadValue<Vector2>().x).normalized;
+        bool isRunning = animator.GetBool(isRunningHash);
+        bool isWalking = animator.GetBool(isWalkingHash);
 
-        if (context.performed)
+        if (movementPressed && !isWalking)
         {
-            float targetAngle = Mathf.Atan2(direction.x,direction.z) * Mathf.Rad2Deg;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity,turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f,angle,0); 
-            controller.Move(direction);
-            
+            animator.SetBool(isWalkingHash, true);
+        }
+
+        if (!movementPressed && isWalking)
+        {
+            animator.SetBool(isWalkingHash, false);
+        }
+
+        if (movementPressed && runPressed && !isRunning)
+        {
+            animator.SetBool(isRunningHash,true);
         }
         
+        if (!movementPressed || !runPressed && isRunning)
+        {
+            animator.SetBool(isRunningHash,false);
+        }
+    }
 
+    void HandleRotation()
+    {
+
+        Vector3 currentPosition = transform.position;
+
+        Vector3 newPosition = new Vector3(currentMovement.x , 0, currentMovement.y);
+
+        Vector3 positionToLookAt = currentPosition + newPosition ;
         
+        transform.LookAt(positionToLookAt);
         
-        
+    }
+
+    
+
+
+
+    private void OnEnable()
+    {
+        input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        input.Disable();
     }
 }

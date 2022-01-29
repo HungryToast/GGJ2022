@@ -7,30 +7,39 @@
             "actions": [
                 {
                     "name": "Move",
-                    "type": "Value",
-                    "id": "1833cc9d-18f1-4150-a186-293edaee2e68",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Jump",
                     "type": "PassThrough",
-                    "id": "f9272cf1-4d99-4c00-b04d-58e4c6b6cd76",
+                    "id": "1833cc9d-18f1-4150-a186-293edaee2e68",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Jump",
+                    "type": "Value",
+                    "id": "f9272cf1-4d99-4c00-b04d-58e4c6b6cd76",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "MouseDelta",
                     "type": "Value",
                     "id": "9db9efbd-6280-4e0e-b083-41ca8c6c1059",
                     "expectedControlType": "Vector2",
-                    "processors": "",
+                    "processors": "StickDeadzone(min=0.3,max=0.925)",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Run",
+                    "type": "Button",
+                    "id": "7db2b28b-f067-4f01-a8d2-ee05053df9de",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -108,6 +117,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "MouseDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "00b8e26e-4022-4851-b11f-63760da9d401",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

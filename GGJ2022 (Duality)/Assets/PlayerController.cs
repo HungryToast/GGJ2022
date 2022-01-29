@@ -29,30 +29,39 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Move"",
-                    ""type"": ""Value"",
-                    ""id"": ""1833cc9d-18f1-4150-a186-293edaee2e68"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Jump"",
                     ""type"": ""PassThrough"",
-                    ""id"": ""f9272cf1-4d99-4c00-b04d-58e4c6b6cd76"",
+                    ""id"": ""1833cc9d-18f1-4150-a186-293edaee2e68"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Jump"",
+                    ""type"": ""Value"",
+                    ""id"": ""f9272cf1-4d99-4c00-b04d-58e4c6b6cd76"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""MouseDelta"",
                     ""type"": ""Value"",
                     ""id"": ""9db9efbd-6280-4e0e-b083-41ca8c6c1059"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone(min=0.3,max=0.925)"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Run"",
+                    ""type"": ""Button"",
+                    ""id"": ""7db2b28b-f067-4f01-a8d2-ee05053df9de"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +141,17 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""action"": ""MouseDelta"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""00b8e26e-4022-4851-b11f-63760da9d401"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Run"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +163,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Keyboard_Move = m_Keyboard.FindAction("Move", throwIfNotFound: true);
         m_Keyboard_Jump = m_Keyboard.FindAction("Jump", throwIfNotFound: true);
         m_Keyboard_MouseDelta = m_Keyboard.FindAction("MouseDelta", throwIfNotFound: true);
+        m_Keyboard_Run = m_Keyboard.FindAction("Run", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -205,6 +226,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Keyboard_Move;
     private readonly InputAction m_Keyboard_Jump;
     private readonly InputAction m_Keyboard_MouseDelta;
+    private readonly InputAction m_Keyboard_Run;
     public struct KeyboardActions
     {
         private @PlayerController m_Wrapper;
@@ -212,6 +234,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Keyboard_Move;
         public InputAction @Jump => m_Wrapper.m_Keyboard_Jump;
         public InputAction @MouseDelta => m_Wrapper.m_Keyboard_MouseDelta;
+        public InputAction @Run => m_Wrapper.m_Keyboard_Run;
         public InputActionMap Get() { return m_Wrapper.m_Keyboard; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -230,6 +253,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @MouseDelta.started -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnMouseDelta;
                 @MouseDelta.performed -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnMouseDelta;
                 @MouseDelta.canceled -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnMouseDelta;
+                @Run.started -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnRun;
+                @Run.performed -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnRun;
+                @Run.canceled -= m_Wrapper.m_KeyboardActionsCallbackInterface.OnRun;
             }
             m_Wrapper.m_KeyboardActionsCallbackInterface = instance;
             if (instance != null)
@@ -243,6 +269,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @MouseDelta.started += instance.OnMouseDelta;
                 @MouseDelta.performed += instance.OnMouseDelta;
                 @MouseDelta.canceled += instance.OnMouseDelta;
+                @Run.started += instance.OnRun;
+                @Run.performed += instance.OnRun;
+                @Run.canceled += instance.OnRun;
             }
         }
     }
@@ -252,5 +281,6 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnMouseDelta(InputAction.CallbackContext context);
+        void OnRun(InputAction.CallbackContext context);
     }
 }
